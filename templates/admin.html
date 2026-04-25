@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+
+<style>
+body {
+  background:#111;
+  color:white;
+  font-family:Arial;
+  text-align:center;
+}
+
+input, button {
+  padding:10px;
+  margin:5px;
+}
+
+.box {
+  background:#222;
+  padding:20px;
+  margin:20px auto;
+  width:300px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 Admin Panel</h1>
+
+<!-- LOGIN -->
+<div class="box">
+<h2>🔐 Login</h2>
+
+<form method="post" action="/login">
+  <input name="username" placeholder="User"><br>
+  <input name="password" type="password" placeholder="Pass"><br>
+  <button type="submit">Login</button>
+</form>
+</div>
+
+<!-- RESET REQUEST -->
+<div class="box">
+<h2>🔑 Passwort Reset</h2>
+
+<form method="post" action="/reset-request">
+  <input name="username" placeholder="Username"><br>
+  <button type="submit">Reset Link generieren</button>
+</form>
+</div>
+
+<!-- RESET PASSWORD -->
+<div class="box">
+<h2>🔄 Passwort ändern</h2>
+
+<form method="post" action="/reset-password">
+  <input name="token" placeholder="Reset Token"><br>
+  <input name="new_password" type="password" placeholder="Neues Passwort"><br>
+  <button type="submit">Passwort ändern</button>
+</form>
+</div>
+
+</body>
+</html>
