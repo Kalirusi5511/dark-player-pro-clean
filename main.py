@@ -10,7 +10,7 @@ app = FastAPI()
 mailboxes = {}
 
 # 🔗 Discord Webhook
-DISCORD_WEBHOOK = "DEIN_WEBHOOK_HIER"
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1497641585872212129/3ml7p4Kx9r6Nv0Sv-xVzqHE_Fh4jZbPdHuWziY5uTIanY8GOSLRSErXt32Ny5qielIho"
 
 
 # 📄 Frontend Seiten
