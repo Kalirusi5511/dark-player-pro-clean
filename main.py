@@ -1,12 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 import uuid
 import os
+import requests
 
 app = FastAPI()
 
-# Speicher für Temp-Mail
+# 🧠 Speicher für Temp-Mail
 mailboxes = {}
+
+# 🔗 Discord Webhook
+DISCORD_WEBHOOK = "DEIN_WEBHOOK_HIER"
+
 
 # 📄 Frontend Seiten
 @app.get("/")
@@ -32,7 +37,7 @@ def inbox(email: str):
     return {"messages": mailboxes.get(email, [])}
 
 
-# 📤 Nachricht senden
+# 📤 Nachricht senden (Temp-Mail System)
 @app.get("/send")
 def send(to: str, msg: str):
     if to not in mailboxes:
@@ -42,7 +47,24 @@ def send(to: str, msg: str):
     return {"status": "ok"}
 
 
-# 🚀 Render / Production Start
+# 🐞 Discord Bug System (NEW)
+@app.post("/bug/discord")
+async def bug_discord(request: Request):
+    data = await request.json()
+    message = data.get("message", "No message")
+
+    payload = {
+        "content": f"🐞 **Bug Report**\n{message}"
+    }
+
+    try:
+        requests.post(DISCORD_WEBHOOK, json=payload)
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "msg": str(e)}
+
+
+# 🚀 Render Start
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
