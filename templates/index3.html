@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Dark Player + Temp Mail + Bug System</title>
+
+<style>
+body {
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+}
+
+button {
+  padding:10px;
+  margin:5px;
+  cursor:pointer;
+}
+
+.player, .mailbox, .bug {
+  margin:20px auto;
+  width:400px;
+  background:#222;
+  padding:15px;
+  border-radius:10px;
+}
+
+.mail {
+  background:#333;
+  margin:5px;
+  padding:10px;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 Dark System Hub</h1>
+
+<!-- 📬 TEMP MAIL -->
+<div class="mailbox">
+<h2>📬 Temp Mail</h2>
+
+<button onclick="generateMail()">Generate Mail</button>
+<div id="email">No email yet</div>
+
+<h3>Inbox</h3>
+<div id="inbox"></div>
+</div>
+
+<!-- 🐞 BUG SYSTEM -->
+<div class="bug">
+<h2>🐞 Bug System</h2>
+
+<textarea id="bug-desc" placeholder="Bug beschreiben..."></textarea><br>
+
+<select id="bug-method">
+  <option value="github">GitHub</option>
+  <option value="mail">Temp Mail</option>
+  <option value="discord">Discord</option>
+</select>
+
+<br>
+<button onclick="submitBug()">Send Bug</button>
+</div>
+
+<script>
+
+let currentEmail = null;
+
+/* 📬 MAIL */
+async function generateMail(){
+  let res = await fetch("/generate");
+  let data = await res.json();
+
+  currentEmail = data.email;
+  document.getElementById("email").innerText = currentEmail;
+
+  loadInbox();
+}
+
+async function loadInbox(){
+  if(!currentEmail) return;
+
+  let res = await fetch("/api/inbox?email="+currentEmail);
+  let data = await res.json();
+
+  let box = document.getElementById("inbox");
+  box.innerHTML = "";
+
+  data.messages.forEach(m=>{
+    let div = document.createElement("div");
+    div.className="mail";
+    div.innerText = m;
+    box.appendChild(div);
+  });
+}
+
+setInterval(loadInbox, 3000);
+
+/* 🐞 BUG SYSTEM */
+async function submitBug(){
+  const desc = document.getElementById("bug-desc").value;
+  const method = document.getElementById("bug-method").value;
+
+  if(!desc) return alert("Bug beschreiben");
+
+  // GitHub
+  if(method === "github"){
+    window.open(
+      "https://github.com/Kalirusi5511/dunkler-musik-player/issues/new?body="
+      + encodeURIComponent(desc),
+      "_blank"
+    );
+  }
+
+  // Temp Mail
+  if(method === "mail"){
+    if(!currentEmail) return alert("Keine Mail aktiv");
+
+    await fetch(`/send?to=${currentEmail}&msg=${encodeURIComponent(desc)}`);
+    alert("Bug gesendet via Mail");
+  }
+
+  // Discord
+  if(method === "discord"){
+    await fetch("/bug/discord", {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({message: desc})
+    });
+
+    alert("Bug an Discord gesendet");
+  }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Temp Mail</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        .box {
+            margin-top: 50px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .email {
+            font-size: 20px;
+            margin: 20px;
+            color: #00ff99;
+        }
+
+        .mail {
+            background: #222;
+            margin: 10px auto;
+            padding: 10px;
+            width: 300px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📬 Temp Mail (No Jinja Version)</h1>
+
+<div class="box">
+    <button onclick="generateMail()">Generate Mail</button>
+
+    <div class="email" id="email">No email yet</div>
+
+    <h3>Inbox</h3>
+    <div id="inbox"></div>
+</div>
+
+<script>
+let currentEmail = null;
+
+async function generateMail() {
+    let res = await fetch("/generate");
+    let data = await res.json();
+
+    currentEmail = data.email;
+    document.getElementById("email").innerText = currentEmail;
+
+    loadInbox();
+}
+
+async function loadInbox() {
+    if (!currentEmail) return;
+
+    let res = await fetch("/api/inbox?email=" + currentEmail);
+    let data = await res.json();
+
+    let box = document.getElementById("inbox");
+    box.innerHTML = "";
+
+    data.messages.forEach(msg => {
+        let div = document.createElement("div");
+        div.className = "mail";
+        div.innerText = msg;
+        box.appendChild(div);
+    });
+}
+
+// 🔁 Auto refresh
+setInterval(loadInbox, 3000);
+</script>
+
+</body>
+</html>
