@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Dark Player + Temp Mail + Bug System</title>
+<title>Dark System Hub</title>
 
 <style>
 body {
@@ -19,9 +19,9 @@ button {
   cursor:pointer;
 }
 
-.player, .mailbox, .bug {
+.container {
   margin:20px auto;
-  width:400px;
+  width:420px;
   background:#222;
   padding:15px;
   border-radius:10px;
@@ -33,6 +33,12 @@ button {
   padding:10px;
   border-radius:6px;
 }
+
+img {
+  margin-top:10px;
+  width:150px;
+  height:150px;
+}
 </style>
 </head>
 
@@ -41,59 +47,76 @@ button {
 <h1>🔥 Dark System Hub</h1>
 
 <!-- 📬 TEMP MAIL -->
-<div class="mailbox">
-<h2>📬 Temp Mail</h2>
+<div class="container">
+  <h2>📬 Temp Mail</h2>
 
-<button onclick="generateMail()">Generate Mail</button>
-<div id="email">No email yet</div>
+  <button onclick="generateMail()">Generate Mail</button>
 
-<h3>Inbox</h3>
-<div id="inbox"></div>
+  <div id="email">No email yet</div>
+
+  <!-- QR CODE -->
+  <img id="qr" />
+
+  <h3>Inbox</h3>
+  <div id="inbox"></div>
 </div>
 
 <!-- 🐞 BUG SYSTEM -->
-<div class="bug">
-<h2>🐞 Bug System</h2>
+<div class="container">
+  <h2>🐞 Bug System</h2>
 
-<textarea id="bug-desc" placeholder="Bug beschreiben..."></textarea><br>
+  <textarea id="bug-desc" placeholder="Bug beschreiben..." style="width:100%;height:80px;"></textarea>
 
-<select id="bug-method">
-  <option value="github">GitHub</option>
-  <option value="mail">Temp Mail</option>
-  <option value="discord">Discord</option>
-</select>
+  <br>
 
-<br>
-<button onclick="submitBug()">Send Bug</button>
+  <select id="bug-method">
+    <option value="github">GitHub</option>
+    <option value="mail">Temp Mail</option>
+    <option value="discord">Discord</option>
+  </select>
+
+  <br>
+
+  <button onclick="submitBug()">Send Bug</button>
 </div>
 
 <script>
 
 let currentEmail = null;
 
-/* 📬 MAIL */
+/* =========================
+   📬 MAIL GENERATE
+========================= */
 async function generateMail(){
   let res = await fetch("/generate");
   let data = await res.json();
 
   currentEmail = data.email;
+
   document.getElementById("email").innerText = currentEmail;
+
+  // QR CODE
+  document.getElementById("qr").src =
+    "data:image/png;base64," + data.qr;
 
   loadInbox();
 }
 
+/* =========================
+   📥 INBOX LIVE
+========================= */
 async function loadInbox(){
   if(!currentEmail) return;
 
-  let res = await fetch("/api/inbox?email="+currentEmail);
+  let res = await fetch("/api/inbox?email=" + currentEmail);
   let data = await res.json();
 
   let box = document.getElementById("inbox");
   box.innerHTML = "";
 
-  data.messages.forEach(m=>{
+  data.messages.forEach(m => {
     let div = document.createElement("div");
-    div.className="mail";
+    div.className = "mail";
     div.innerText = m;
     box.appendChild(div);
   });
@@ -101,7 +124,9 @@ async function loadInbox(){
 
 setInterval(loadInbox, 3000);
 
-/* 🐞 BUG SYSTEM */
+/* =========================
+   🐞 BUG SYSTEM
+========================= */
 async function submitBug(){
   const desc = document.getElementById("bug-desc").value;
   const method = document.getElementById("bug-method").value;
@@ -128,7 +153,7 @@ async function submitBug(){
   // Discord
   if(method === "discord"){
     await fetch("/bug/discord", {
-      method:"POST",
+      method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({message: desc})
     });
