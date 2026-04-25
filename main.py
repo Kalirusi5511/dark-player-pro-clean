@@ -30,7 +30,7 @@ mailboxes = load_db()
 # =========================
 # 🔗 DISCORD WEBHOOK
 # =========================
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/DEIN_WEBHOOK"
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1497641585872212129/3ml7p4Kx9r6Nv0Sv-xVzqHE_Fh4jZbPdHuWziY5uTIanY8GOSLRSErXt32Ny5qielIho"
 
 
 # =========================
