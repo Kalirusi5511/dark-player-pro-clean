@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import uuid
+import os
 
 app = FastAPI()
 
-# Speicher
+# Speicher für Temp-Mail
 mailboxes = {}
 
-# 📄 Seiten
+# 📄 Frontend Seiten
 @app.get("/")
 def index():
     return FileResponse("templates/index.html")
@@ -31,7 +32,7 @@ def inbox(email: str):
     return {"messages": mailboxes.get(email, [])}
 
 
-# ✅ DAS HAT DIR GEFEHLT
+# 📤 Nachricht senden
 @app.get("/send")
 def send(to: str, msg: str):
     if to not in mailboxes:
@@ -39,3 +40,10 @@ def send(to: str, msg: str):
 
     mailboxes[to].append(msg)
     return {"status": "ok"}
+
+
+# 🚀 Render / Production Start
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
